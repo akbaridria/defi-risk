@@ -1,4 +1,8 @@
+import { COLUMN_HEADER } from "@/app/constant";
+import type { PoolData } from "@/types";
+import { InfoIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -7,38 +11,12 @@ import {
 	TableHeader,
 	TableRow,
 } from "./ui/table";
-import { MOCK_DATA } from "@/app/constant";
-
-const ColumnHeader = [
-	"Network",
-	"Pair Address",
-	"Protocol",
-	"Pool Name",
-	"Token 0",
-	"Token 1",
-	"Token 0 Share",
-	"Token 1 Share",
-	"Token 0 TVL",
-	"Token 1 TVL",
-	"Token 0 Price",
-	"Token 1 Price",
-	"Token 0 Reserve",
-	"Token 1 Reserve",
-	"Total TVL",
-	"Score",
-];
-
-const excludeColumns = [
-	"Pair Address",
-	"Token 0 Share",
-	"Token 1 Share",
-	"Token 0 TVL",
-	"Token 1 TVL",
-	"Token 0 Price",
-	"Token 1 Price",
-	"Token 0 Reserve",
-	"Token 1 Reserve",
-];
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "./ui/tooltip";
 
 const formatAddress = (address: string) =>
 	`${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -53,19 +31,60 @@ const formatCurrency = (value: number | null, includeSymbol = true) =>
 				.replace(includeSymbol ? "" : "USD", "")
 		: 0;
 const getScoreBackgroundColor = (score: number) => {
-	if (score >= 90) return "bg-green-500";
-	if (score >= 75) return "bg-yellow-500";
-	if (score >= 50) return "bg-orange-500";
-	return "bg-red-500";
+	if (score >= 80) return "bg-red-200 text-red-900 border-2 border-red-600";
+	if (score >= 60)
+		return "bg-orange-200 text-orange-900 border-2 border-orange-600";
+	if (score >= 40)
+		return "bg-yellow-200 text-yellow-900 border-2 border-yellow-600";
+	if (score >= 20)
+		return "bg-green-200 text-green-900 border-2 border-green-600";
+	return "bg-red-200 text-red-900 border-2 border-red-600";
 };
 
-const DataTable = () => {
+const DataTable: React.FC<{
+	poolData: PoolData[];
+	excludeColumns: string[];
+	isLoading: boolean;
+}> = ({ poolData, excludeColumns, isLoading }) => {
+	if (isLoading) {
+		return (
+			<div className="border rounded-lg">
+				<Table className="rounded-lg">
+					<TableHeader>
+						<TableRow>
+							{COLUMN_HEADER.filter(
+								(header) => !excludeColumns.includes(header),
+							).map((header) => (
+								<TableHead key={header} className="whitespace-nowrap py-4">
+									<Skeleton className="h-6 w-20" />
+								</TableHead>
+							))}
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{[...Array(10)].map((_, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							<TableRow key={i}>
+								{COLUMN_HEADER.filter(
+									(header) => !excludeColumns.includes(header),
+								).map((header) => (
+									<TableCell key={header} className="whitespace-nowrap py-8">
+										<Skeleton className="h-6 w-20" />
+									</TableCell>
+								))}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+		);
+	}
 	return (
 		<div className="border rounded-lg">
 			<Table className="rounded-lg">
 				<TableHeader>
 					<TableRow>
-						{ColumnHeader.filter(
+						{COLUMN_HEADER.filter(
 							(header) => !excludeColumns.includes(header),
 						).map((header) => (
 							<TableHead key={header} className="whitespace-nowrap py-4">
@@ -75,7 +94,7 @@ const DataTable = () => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{MOCK_DATA.data.map((data, index) => (
+					{poolData.map((data) => (
 						<TableRow key={data.pair_address}>
 							{!excludeColumns.includes("Network") && (
 								<TableCell className="whitespace-nowrap py-8 uppercase">
@@ -89,7 +108,7 @@ const DataTable = () => {
 							)}
 							{!excludeColumns.includes("Protocol") && (
 								<TableCell className="whitespace-nowrap">
-									{data.protocol}
+									{data.protocol || "-"}
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Pool Name") && (
@@ -99,17 +118,17 @@ const DataTable = () => {
 							)}
 							{!excludeColumns.includes("Token 0") && (
 								<TableCell className="whitespace-nowrap">
-									{data.token_0.name}
-									<Badge variant="secondary" className="ml-2">
-										{data.token_0.symbol}
+									{data?.token_0?.name}
+									<Badge variant="outline" className="ml-2">
+										{data?.token_0?.symbol}
 									</Badge>
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Token 1") && (
 								<TableCell className="whitespace-nowrap">
-									{data.token_1.name}
-									<Badge variant="secondary" className="ml-2">
-										{data.token_1.symbol}
+									{data?.token_1?.name}
+									<Badge variant="outline" className="ml-2">
+										{data?.token_1?.symbol}
 									</Badge>
 								</TableCell>
 							)}
@@ -145,12 +164,12 @@ const DataTable = () => {
 							)}
 							{!excludeColumns.includes("Token 0 Reserve") && (
 								<TableCell className="whitespace-nowrap">
-									{formatCurrency(data.token_0_reserve, true)}
+									{formatCurrency(data.token_0_reserve, false)}
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Token 1 Reserve") && (
 								<TableCell className="whitespace-nowrap">
-									{formatCurrency(data.token_1_reserve, true)}
+									{formatCurrency(data.token_1_reserve, false)}
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Total TVL") && (
@@ -160,11 +179,33 @@ const DataTable = () => {
 							)}
 							{!excludeColumns.includes("Score") && (
 								<TableCell className="whitespace-nowrap">
-									<div
-										className={`w-8 h-8 flex items-center justify-center rounded-full text-white font-bold ${getScoreBackgroundColor(data.score ?? 0)}`}
-									>
-										{data.score}
-									</div>
+									<TooltipProvider delayDuration={200}>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<div className="grid items-center gap-2">
+													<div
+														className={`w-8 h-8 text-sm py-0.5 px-1 flex gap-1 items-center justify-center rounded-full text-white font-bold ${getScoreBackgroundColor(data.risk_score ?? 0)}`}
+													>
+														{Math.floor(data.risk_score || 0)}
+													</div>
+													<div className="flex items-center gap-1">
+														{data.risk_category} <InfoIcon size={14} />
+													</div>
+												</div>
+											</TooltipTrigger>
+											<TooltipContent side="left">
+												<ul>
+													{data.warnings?.map((warning) => {
+														return (
+															<li key={warning} className="text-sm">
+																{warning}
+															</li>
+														);
+													})}
+												</ul>
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
 								</TableCell>
 							)}
 						</TableRow>
