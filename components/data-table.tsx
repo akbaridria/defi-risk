@@ -1,7 +1,8 @@
 import { COLUMN_HEADER } from "@/app/constant";
 import type { PoolData } from "@/types";
-import { InfoIcon } from "lucide-react";
+import { Check, Copy, InfoIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import {
 	Table,
@@ -17,6 +18,8 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "./ui/tooltip";
+import { useState } from "react";
+import ActionTable from "./action-table";
 
 const formatAddress = (address: string) =>
 	`${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -41,6 +44,33 @@ const getScoreBackgroundColor = (score: number) => {
 	return "bg-red-200 text-red-900 border-2 border-red-600";
 };
 
+
+const CopyText: React.FC<{ text: string }> = ({ text }) => {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(text);
+		setCopied(true);
+		setTimeout(() => {
+			setCopied(false);
+		}, 1000);
+	};
+
+	return (
+		<div className="flex items-center gap-1">
+			<div>{formatAddress(text)}</div>
+			<Button
+				size="icon"
+				onClick={handleCopy}
+				variant="ghost"
+				className="w-6 h-6"
+			>
+				{copied ? <Check size={8} /> : <Copy size={8} />}
+			</Button>
+		</div>
+	);
+};
+
 const DataTable: React.FC<{
 	poolData: PoolData[];
 	excludeColumns: string[];
@@ -59,11 +89,13 @@ const DataTable: React.FC<{
 									<Skeleton className="h-6 w-20" />
 								</TableHead>
 							))}
+							<TableHead className="whitespace-nowrap py-4">
+								<Skeleton className="h-6 w-20" />
+							</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{[...Array(10)].map((_, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 							<TableRow key={i}>
 								{COLUMN_HEADER.filter(
 									(header) => !excludeColumns.includes(header),
@@ -72,6 +104,9 @@ const DataTable: React.FC<{
 										<Skeleton className="h-6 w-20" />
 									</TableCell>
 								))}
+								<TableCell className="whitespace-nowrap py-8">
+									<Skeleton className="h-6 w-20" />
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
@@ -91,6 +126,7 @@ const DataTable: React.FC<{
 								{header}
 							</TableHead>
 						))}
+						<TableHead className="whitespace-nowrap py-4" />
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -103,7 +139,7 @@ const DataTable: React.FC<{
 							)}
 							{!excludeColumns.includes("Pair Address") && (
 								<TableCell className="whitespace-nowrap">
-									{formatAddress(data.pair_address)}
+									<CopyText text={data.pair_address} />
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Protocol") && (
@@ -172,6 +208,16 @@ const DataTable: React.FC<{
 									{formatCurrency(data.token_1_reserve, false)}
 								</TableCell>
 							)}
+							{!excludeColumns.includes("Token 0 Address") && (
+								<TableCell className="whitespace-nowrap">
+									<CopyText text={data?.token_0_address} />
+								</TableCell>
+							)}
+							{!excludeColumns.includes("Token 1 Address") && (
+								<TableCell className="whitespace-nowrap">
+									<CopyText text={data?.token_1_address} />
+								</TableCell>
+							)}
 							{!excludeColumns.includes("Total TVL") && (
 								<TableCell className="whitespace-nowrap">
 									{formatCurrency(data.total_tvl, true)}
@@ -184,7 +230,7 @@ const DataTable: React.FC<{
 											<TooltipTrigger asChild>
 												<div className="grid items-center gap-2">
 													<div
-														className={`w-8 h-8 text-sm py-0.5 px-1 flex gap-1 items-center justify-center rounded-full text-white font-bold ${getScoreBackgroundColor(data.risk_score ?? 0)}`}
+														className={`w-8 h-8 text-sm py-0.5 px-1 flex gap-1 items-center justify-center rounded-full font-bold ${getScoreBackgroundColor(data.risk_score ?? 0)}`}
 													>
 														{Math.floor(data.risk_score || 0)}
 													</div>
@@ -208,6 +254,12 @@ const DataTable: React.FC<{
 									</TooltipProvider>
 								</TableCell>
 							)}
+							<TableCell>
+								<ActionTable
+									chain={data.network}
+									pairAddress={data.pair_address}
+								/>
+							</TableCell>
 						</TableRow>
 					))}
 				</TableBody>

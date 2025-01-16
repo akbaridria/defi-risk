@@ -84,6 +84,8 @@ export type PoolData = {
 	token_1_price: number | null;
 	token_0_reserve: number | null;
 	token_1_reserve: number | null;
+	token_0_address: string;
+	token_1_address: string;
 	total_tvl: number | null;
 	risk_score: number | null;
 	risk_category: string | null;

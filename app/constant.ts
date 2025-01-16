@@ -34,12 +34,13 @@ export const COLUMN_HEADER = [
 	"Token 1 Price",
 	"Token 0 Reserve",
 	"Token 1 Reserve",
+	"Token 0 Address",
+	"Token 1 Address",
 	"Total TVL",
 	"Risk Score",
 ];
 
 export const DEFAULT_EXCLUDED_COLUMNS = [
-	"Pair Address",
 	"Token 0 Share",
 	"Token 1 Share",
 	"Token 0 TVL",
@@ -48,4 +49,6 @@ export const DEFAULT_EXCLUDED_COLUMNS = [
 	"Token 1 Price",
 	"Token 0 Reserve",
 	"Token 1 Reserve",
+    "Pair Address",
+    "Protocol",
 ];

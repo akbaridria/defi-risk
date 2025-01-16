@@ -33,14 +33,13 @@ interface RiskAnalysis {
 	pool_metrics: PoolMetrics;
 }
 
-// Helper functions
 const normalize = (
 	value: number | null | undefined,
 	minVal: number,
 	maxVal: number,
 ): number => {
 	if (value === null || value === undefined || value === 0) {
-		return 1; // Highest risk for missing/zero values
+		return 1;
 	}
 	return Math.min(1, Math.max(0, (value - minVal) / (maxVal - minVal)));
 };
@@ -119,7 +118,6 @@ const getRiskCategory = (score: number): string => {
 	return "Very High Risk";
 };
 
-// Main risk analysis function
 export const analyzePoolRisk = (
 	poolData: ResponsePoolMetrics,
 ): RiskAnalysis => {
@@ -132,19 +130,16 @@ export const analyzePoolRisk = (
 		activity: 0.1,
 	};
 
-	// Calculate individual risk components
 	const tvl = Math.abs(poolData.total_tvl ?? 0);
 	const tvlScore = normalize(tvl, 0, 1e6);
 	const volumeScore = calculateVolumeScore(poolData);
 	const activityScore = calculateActivityScore(poolData);
 
-	// Price stability calculation
 	const calculatePriceRatio = (token0Price?: number, token1Price?: number) => {
-		// If either price is missing, return 0
 		if (!token0Price || !token1Price) return 0;
 
 		const maxPrice = Math.max(token0Price, token1Price);
-		// Prevent division by zero
+
 		if (maxPrice === 0) return 0;
 
 		const minPrice = Math.min(token0Price, token1Price);
@@ -156,7 +151,6 @@ export const analyzePoolRisk = (
 	);
 	const priceScore = normalize(priceRatio, 0, 1);
 
-	// Liquidity balance calculation
 	const totalShare =
 		Math.abs(poolData.token0_share ?? 0) + Math.abs(poolData.token1_share ?? 0);
 	const balanceRatio =
@@ -167,7 +161,6 @@ export const analyzePoolRisk = (
 		(totalShare / 2);
 	const balanceScore = normalize(balanceRatio, 0, 1);
 
-	// Component scores
 	const componentScores: ComponentScores = {
 		tvl_score: tvlScore * 100,
 		volume_score: volumeScore * 100,
@@ -176,7 +169,6 @@ export const analyzePoolRisk = (
 		balance_score: balanceScore * 100,
 	};
 
-	// Calculate final risk score
 	const finalScore =
 		(weights.tvl * tvlScore +
 			weights.volume * volumeScore +
@@ -185,7 +177,6 @@ export const analyzePoolRisk = (
 			weights.balance * balanceScore) *
 		100;
 
-	// Generate warnings
 	const warnings: string[] = [];
 	if (tvl < 1e-6) warnings.push("Extremely low TVL");
 	if (volumeScore > 0.8) warnings.push("No significant recent trading volume");

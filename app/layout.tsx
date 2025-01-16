@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import { ReactQueryProvider } from "@/components/react-query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -41,6 +42,7 @@ export default function RootLayout({
 					>
 						<Header />
 						{children}
+						<Toaster />
 					</ThemeProvider>
 				</ReactQueryProvider>
 			</body>
