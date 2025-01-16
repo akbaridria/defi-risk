@@ -7,6 +7,7 @@ import {
 	ExternalLinkIcon,
 	ReplaceIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import {
 	DropdownMenu,
@@ -18,7 +19,6 @@ import {
 	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 
 interface IProps {
 	chain: string;

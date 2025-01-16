@@ -1,6 +1,8 @@
 import { COLUMN_HEADER } from "@/app/constant";
 import type { PoolData } from "@/types";
 import { Check, Copy, InfoIcon } from "lucide-react";
+import { useState } from "react";
+import ActionTable from "./action-table";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
@@ -18,8 +20,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "./ui/tooltip";
-import { useState } from "react";
-import ActionTable from "./action-table";
 
 const formatAddress = (address: string) =>
 	`${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -43,7 +43,6 @@ const getScoreBackgroundColor = (score: number) => {
 		return "bg-green-200 text-green-900 border-2 border-green-600";
 	return "bg-red-200 text-red-900 border-2 border-red-600";
 };
-
 
 const CopyText: React.FC<{ text: string }> = ({ text }) => {
 	const [copied, setCopied] = useState(false);

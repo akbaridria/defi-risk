@@ -1,7 +1,7 @@
 import { GithubIcon, ShieldBanIcon } from "lucide-react";
+import Link from "next/link";
 import { ThemeChanger } from "./theme-changer";
 import { Button } from "./ui/button";
-import Link from "next/link";
 
 const Header = () => {
 	return (

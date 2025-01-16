@@ -49,6 +49,6 @@ export const DEFAULT_EXCLUDED_COLUMNS = [
 	"Token 1 Price",
 	"Token 0 Reserve",
 	"Token 1 Reserve",
-    "Pair Address",
-    "Protocol",
+	"Pair Address",
+	"Protocol",
 ];

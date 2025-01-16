@@ -2,6 +2,7 @@
 
 import ChainSelector from "@/components/chain-selector";
 import DataTable from "@/components/data-table";
+import PaginationWithEllipsis from "@/components/pagination";
 import { Input } from "@/components/ui/input";
 import ViewSelector from "@/components/view-selector";
 import { useMetadata, useMetrics } from "@/hooks/useApi";
@@ -10,7 +11,6 @@ import { analyzePoolRisk } from "@/lib/risk-analyzer";
 import type { PoolData } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_EXCLUDED_COLUMNS } from "./constant";
-import PaginationWithEllipsis from "@/components/pagination";
 
 export default function Home() {
 	const [excludeColumns, setExcludeColumns] = useState<string[]>(
@@ -57,7 +57,7 @@ export default function Home() {
 			);
 
 			const analyzeRisk = analyzePoolRisk(metrics);
-            console.log(analyzeRisk);
+
 			return {
 				network: metrics?.blockchain || "-",
 				pair_address: metrics?.pair_address || "-",

@@ -31,8 +31,6 @@ export async function GET(req: NextRequest) {
 			},
 		);
 
-        console.log(response)
-
 		if (!response.ok) {
 			throw new Error(`API responded with status: ${response.status}`);
 		}

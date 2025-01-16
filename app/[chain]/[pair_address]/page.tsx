@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { useMetrics } from "@/hooks/useApi";
 import { analyzePoolRisk } from "@/lib/risk-analyzer";
 import { Bolt } from "lucide-react";
