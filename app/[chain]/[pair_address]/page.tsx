@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { useMetrics } from "@/hooks/useApi";
 import { analyzePoolRisk } from "@/lib/risk-analyzer";
@@ -20,14 +21,7 @@ interface PageProps {
 	};
 }
 
-const getScoreColor = (score: number, isComponentScore = false) => {
-	if (isComponentScore) {
-		if (score >= 80) return "hsl(var(--chart-2))";
-		if (score >= 60) return "hsl(var(--chart-3))";
-		if (score >= 40) return "hsl(var(--chart-4))";
-		if (score >= 20) return "hsl(var(--chart-5))";
-		return "hsl(var(--chart-5))";
-	}
+const getScoreColor = (score: number) => {
 	if (score >= 80) return "hsl(var(--chart-5))";
 	if (score >= 60) return "hsl(var(--chart-4))";
 	if (score >= 40) return "hsl(var(--chart-3))";
@@ -73,11 +67,17 @@ export default function PairPage({ params }: PageProps) {
 		<div className="container mx-auto py-8">
 			<div className="space-y-4">
 				<div className="border rounded-lg">
-					<div className="border-b p-4 flex items-center gap-2">
-						<Bolt size={16} />
-						<div>Risk Score</div>
+					<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+						<div className="flex items-center gap-2 mb-2 sm:mb-0">
+							<Bolt size={16} />
+							<div>Risk Score</div>
+						</div>
+						<Badge variant="outline">
+							A higher score indicates a higher level of risk associated with
+							the pool
+						</Badge>
 					</div>
-					<div className="grid grid-cols-6 gap-4 p-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4">
 						<RadialChart
 							score={analyzeRisk?.risk_score ?? 0}
 							label="Risk Score"
@@ -148,7 +148,7 @@ const RadialChart: React.FC<IRadialChartProps> = ({
 		},
 		score: {
 			label: "Risk Score",
-			color: getScoreColor(score, label !== "Risk Score"),
+			color: getScoreColor(score),
 		},
 	} satisfies ChartConfig;
 	return (
