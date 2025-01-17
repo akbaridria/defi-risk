@@ -1,10 +1,14 @@
 "use client";
 
+import CopyAddress from "@/components/copy-address";
 import { Badge } from "@/components/ui/badge";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useMetrics } from "@/hooks/useApi";
+import { useMetadata, useMetrics } from "@/hooks/useApi";
 import { analyzePoolRisk } from "@/lib/risk-analyzer";
-import { Bolt } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import type { ResponsePoolMetrics } from "@/types";
+import { Bolt, ChartPie, WavesLadder } from "lucide-react";
+import type React from "react";
 import { useMemo } from "react";
 import {
 	Label,
@@ -29,6 +33,113 @@ const getScoreColor = (score: number) => {
 	return "hsl(var(--chart-5))";
 };
 
+interface IPropsPoolMetadata {
+	chain: string;
+	pair_address: string;
+}
+
+const PoolMetadata: React.FC<IPropsPoolMetadata> = ({
+	chain,
+	pair_address,
+}) => {
+	const { data: metaData } = useMetadata({
+		blockchain: chain,
+		pair_address: pair_address,
+		limit: 1,
+		page: 0,
+	});
+
+	const metadata = useMemo(() => metaData?.data?.[0], [metaData]);
+	const poolName = useMemo(
+		() =>
+			`${metadata?.token0_symbol ?? ""} - ${metadata?.token1_symbol ?? ""} `,
+		[metadata],
+	);
+	return (
+		<div className="border rounded-lg">
+			<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+				<div className="flex items-center gap-2">
+					<WavesLadder size={16} />
+					<div>Pool Metadata</div>
+				</div>
+			</div>
+			<div className="p-4">
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<div className="text-muted-foreground">Network</div>
+						<div className="uppercase">{chain}</div>
+					</div>
+					<div className="flex items-center justify-between">
+						<div className="text-muted-foreground">Pool Name</div>
+						<div>{poolName}</div>
+					</div>
+					<div className="flex items-center justify-between">
+						<div className="text-muted-foreground">Pair Address</div>
+						<div>
+							<CopyAddress text={metadata?.pair_address ?? ""} />
+						</div>
+					</div>
+					<div className="flex items-center justify-between">
+						<div className="text-muted-foreground">Token0 Address</div>
+						<div>
+							<CopyAddress text={metadata?.token0 ?? ""} />
+						</div>
+					</div>
+					<div className="flex items-center justify-between">
+						<div className="text-muted-foreground">Token1 Address</div>
+						<div>
+							<CopyAddress text={metadata?.token1 ?? ""} />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+const PoolStats: React.FC<{ data: ResponsePoolMetrics | undefined }> = ({
+	data,
+}) => {
+	return (
+		<div className="border rounded-lg">
+			<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+				<div className="flex items-center gap-2">
+					<ChartPie size={16} />
+					<div>Pool Stats</div>
+				</div>
+			</div>
+			<div className="p-4">
+				<div className="grid grid-cols-2 gap-4">
+					<div>
+						<div className="text-muted-foreground">TVL</div>
+						<div className="text-xl font-semibold">
+							{formatCurrency(data?.total_tvl ?? 0)}
+						</div>
+					</div>
+					<div>
+						<div className="text-muted-foreground">Volume All</div>
+						<div className="text-xl font-semibold">
+							{formatCurrency(data?.volume_all ?? 0)}
+						</div>
+					</div>
+					<div>
+						<div className="text-muted-foreground">Volume 24h</div>
+						<div className="text-xl font-semibold">
+							{formatCurrency(data?.volume_24hrs ?? 0)}
+						</div>
+					</div>
+					<div>
+						<div className="text-muted-foreground">Transaction 24h</div>
+						<div className="text-xl font-semibold">
+							{formatCurrency(data?.transactions_24hrs ?? 0, false)}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 export default function PairPage({ params }: PageProps) {
 	const { chain, pair_address } = params;
 
@@ -40,6 +151,7 @@ export default function PairPage({ params }: PageProps) {
 	});
 
 	const metrics = useMemo(() => data?.data?.[0], [data]);
+
 	const analyzeRisk = useMemo(
 		() => (metrics ? analyzePoolRisk(metrics) : null),
 		[metrics],
@@ -66,6 +178,10 @@ export default function PairPage({ params }: PageProps) {
 	return (
 		<div className="container mx-auto py-8">
 			<div className="space-y-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<PoolMetadata chain={chain} pair_address={pair_address} />
+					<PoolStats data={metrics} />
+				</div>
 				<div className="border rounded-lg">
 					<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
 						<div className="flex items-center gap-2 mb-2 sm:mb-0">

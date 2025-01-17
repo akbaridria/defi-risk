@@ -70,3 +70,14 @@ export const api = {
 	delete: <T>(url: string, options?: RequestInit) =>
 		customFetch<T>(url, { method: "DELETE", ...options }),
 };
+
+export const formatCurrency = (value: number | null, includeSymbol = true) =>
+	value
+		? value
+				.toLocaleString("en-US", {
+					style: "currency",
+					currency: "USD",
+					currencyDisplay: includeSymbol ? "symbol" : "code",
+				})
+				.replace(includeSymbol ? "" : "USD", "")
+		: 0;

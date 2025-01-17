@@ -1,10 +1,10 @@
 import { COLUMN_HEADER } from "@/app/constant";
+import { formatCurrency } from "@/lib/utils";
 import type { PoolData } from "@/types";
-import { Check, Copy, InfoIcon } from "lucide-react";
-import { useState } from "react";
+import { InfoIcon } from "lucide-react";
 import ActionTable from "./action-table";
+import CopyAddress from "./copy-address";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import {
 	Table,
@@ -21,18 +21,6 @@ import {
 	TooltipTrigger,
 } from "./ui/tooltip";
 
-const formatAddress = (address: string) =>
-	`${address.slice(0, 6)}...${address.slice(-4)}`;
-const formatCurrency = (value: number | null, includeSymbol = true) =>
-	value
-		? value
-				.toLocaleString("en-US", {
-					style: "currency",
-					currency: "USD",
-					currencyDisplay: includeSymbol ? "symbol" : "code",
-				})
-				.replace(includeSymbol ? "" : "USD", "")
-		: 0;
 const getScoreBackgroundColor = (score: number) => {
 	if (score >= 80) return "bg-red-200 text-red-900 border-2 border-red-600";
 	if (score >= 60)
@@ -42,32 +30,6 @@ const getScoreBackgroundColor = (score: number) => {
 	if (score >= 20)
 		return "bg-green-200 text-green-900 border-2 border-green-600";
 	return "bg-red-200 text-red-900 border-2 border-red-600";
-};
-
-const CopyText: React.FC<{ text: string }> = ({ text }) => {
-	const [copied, setCopied] = useState(false);
-
-	const handleCopy = async () => {
-		await navigator.clipboard.writeText(text);
-		setCopied(true);
-		setTimeout(() => {
-			setCopied(false);
-		}, 1000);
-	};
-
-	return (
-		<div className="flex items-center gap-1">
-			<div>{formatAddress(text)}</div>
-			<Button
-				size="icon"
-				onClick={handleCopy}
-				variant="ghost"
-				className="w-6 h-6"
-			>
-				{copied ? <Check size={8} /> : <Copy size={8} />}
-			</Button>
-		</div>
-	);
 };
 
 const DataTable: React.FC<{
@@ -138,7 +100,7 @@ const DataTable: React.FC<{
 							)}
 							{!excludeColumns.includes("Pair Address") && (
 								<TableCell className="whitespace-nowrap">
-									<CopyText text={data.pair_address} />
+									<CopyAddress text={data.pair_address} />
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Protocol") && (
@@ -209,12 +171,12 @@ const DataTable: React.FC<{
 							)}
 							{!excludeColumns.includes("Token 0 Address") && (
 								<TableCell className="whitespace-nowrap">
-									<CopyText text={data?.token_0_address} />
+									<CopyAddress text={data?.token_0_address} />
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Token 1 Address") && (
 								<TableCell className="whitespace-nowrap">
-									<CopyText text={data?.token_1_address} />
+									<CopyAddress text={data?.token_1_address} />
 								</TableCell>
 							)}
 							{!excludeColumns.includes("Total TVL") && (
