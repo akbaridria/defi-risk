@@ -42,7 +42,7 @@ const getScoreColor = (score: number) => {
 	if (score >= 80) return "hsl(var(--chart-5))";
 	if (score >= 60) return "hsl(var(--chart-4))";
 	if (score >= 40) return "hsl(var(--chart-3))";
-	if (score >= 20) return "hsl(var(--chart-2))";
+	if (score <= 20) return "hsl(var(--chart-2))";
 	return "hsl(var(--chart-5))";
 };
 

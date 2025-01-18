@@ -27,7 +27,7 @@ const getScoreBackgroundColor = (score: number) => {
 		return "bg-orange-200 text-orange-900 border-2 border-orange-600";
 	if (score >= 40)
 		return "bg-yellow-200 text-yellow-900 border-2 border-yellow-600";
-	if (score >= 20)
+	if (score <= 20)
 		return "bg-green-200 text-green-900 border-2 border-green-600";
 	return "bg-red-200 text-red-900 border-2 border-red-600";
 };
