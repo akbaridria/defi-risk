@@ -1,7 +1,7 @@
 import { COLUMN_HEADER } from "@/app/constant";
 import { formatCurrency } from "@/lib/utils";
 import type { PoolData } from "@/types";
-import { Inbox, InfoIcon } from "lucide-react";
+import { Inbox, InfoIcon, TriangleAlert } from "lucide-react";
 import ActionTable from "./action-table";
 import CopyAddress from "./copy-address";
 import { Badge } from "./ui/badge";
@@ -221,11 +221,14 @@ const DataTable: React.FC<{
 												<ul>
 													{data.warnings?.map((warning) => {
 														return (
-															<li key={warning} className="text-sm">
-																{warning}
+															<li key={warning} className="text-sm flex items-center gap-1">
+																<TriangleAlert size={16} /> {warning}
 															</li>
 														);
 													})}
+                                                    {
+                                                        data.warnings.length ===0 && <li className="text-sm">No warnings</li>
+                                                    }
 												</ul>
 											</TooltipContent>
 										</Tooltip>

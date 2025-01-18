@@ -12,9 +12,15 @@ const Header = () => {
 					<div className="text-2xl font-semibold tracking-tight">DefiRisk</div>
 				</Link>
 				<div className="flex items-center space-x-2">
-					<Button variant="ghost" size="icon">
-						<GithubIcon />
-					</Button>
+					<a
+						href="https://github.com/akbaridria/defi-risk"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<Button variant="ghost" size="icon">
+							<GithubIcon />
+						</Button>
+					</a>
 					<ThemeChanger />
 				</div>
 			</div>
