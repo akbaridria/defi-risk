@@ -56,14 +56,14 @@ const ActionTable: React.FC<IProps> = ({ chain, pairAddress }) => {
 							<DropletOff size={14} />
 						</DropdownMenuShortcut>
 					</DropdownMenuItem>
-					<DropdownMenuItem
-						onClick={() => router.push(`/${chain}/${pairAddress}`)}
-					>
-						Details
-						<DropdownMenuShortcut>
-							<ExternalLinkIcon size={14} />
-						</DropdownMenuShortcut>
-					</DropdownMenuItem>
+					<a href={`/${chain}/${pairAddress}`}>
+						<DropdownMenuItem>
+							Details
+							<DropdownMenuShortcut>
+								<ExternalLinkIcon size={14} />
+							</DropdownMenuShortcut>
+						</DropdownMenuItem>
+					</a>
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>

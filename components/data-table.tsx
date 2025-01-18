@@ -27,8 +27,10 @@ const getScoreBackgroundColor = (score: number) => {
 		return "bg-orange-200 text-orange-900 border-2 border-orange-600";
 	if (score >= 40)
 		return "bg-yellow-200 text-yellow-900 border-2 border-yellow-600";
-	if (score <= 20)
+	if (score >= 20)
 		return "bg-green-200 text-green-900 border-2 border-green-600";
+	if (score >= 0)
+		return "bg-emerald-200 text-emerald-900 border-2 border-emerald-600";
 	return "bg-red-200 text-red-900 border-2 border-red-600";
 };
 
@@ -221,14 +223,17 @@ const DataTable: React.FC<{
 												<ul>
 													{data.warnings?.map((warning) => {
 														return (
-															<li key={warning} className="text-sm flex items-center gap-1">
+															<li
+																key={warning}
+																className="text-sm flex items-center gap-1"
+															>
 																<TriangleAlert size={16} /> {warning}
 															</li>
 														);
 													})}
-                                                    {
-                                                        data.warnings.length ===0 && <li className="text-sm">No warnings</li>
-                                                    }
+													{data.warnings.length === 0 && (
+														<li className="text-sm">No warnings</li>
+													)}
 												</ul>
 											</TooltipContent>
 										</Tooltip>
