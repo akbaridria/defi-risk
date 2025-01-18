@@ -1,7 +1,7 @@
 import { COLUMN_HEADER } from "@/app/constant";
 import { formatCurrency } from "@/lib/utils";
 import type { PoolData } from "@/types";
-import { InfoIcon } from "lucide-react";
+import { Inbox, InfoIcon } from "lucide-react";
 import ActionTable from "./action-table";
 import CopyAddress from "./copy-address";
 import { Badge } from "./ui/badge";
@@ -91,6 +91,23 @@ const DataTable: React.FC<{
 					</TableRow>
 				</TableHeader>
 				<TableBody>
+					{poolData.length === 0 && (
+						<TableCell colSpan={8} className="text-center py-8">
+							<div className="flex flex-col items-center justify-center">
+								<div className="w-20 h-20 bg-secondary flex items-center justify-center rounded-full">
+									<Inbox className="w-10 h-10" />
+								</div>
+								<div className="space-y-2 text-center">
+									<h2 className="text-2xl font-bold tracking-tight">
+										No data to display
+									</h2>
+									<p className="text-gray-500 dark:text-gray-400">
+										It looks like there's no data available yet.
+									</p>
+								</div>
+							</div>
+						</TableCell>
+					)}
 					{poolData.map((data) => (
 						<TableRow key={data.pair_address}>
 							{!excludeColumns.includes("Network") && (

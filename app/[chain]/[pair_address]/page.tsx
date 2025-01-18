@@ -1,13 +1,26 @@
 "use client";
 
 import CopyAddress from "@/components/copy-address";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
+import HyperText from "@/components/ui/hyper-text";
 import { useMetadata, useMetrics } from "@/hooks/useApi";
 import { analyzePoolRisk } from "@/lib/risk-analyzer";
 import { formatCurrency } from "@/lib/utils";
 import type { ResponsePoolMetrics } from "@/types";
-import { Bolt, ChartPie, WavesLadder } from "lucide-react";
+import { Progress } from "@radix-ui/react-progress";
+import {
+	Bolt,
+	BookOpenText,
+	ChartPie,
+	FileWarning,
+	Inbox,
+	Info,
+	TriangleAlert,
+	WavesLadder,
+} from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
 import {
@@ -60,7 +73,7 @@ const PoolMetadata: React.FC<IPropsPoolMetadata> = ({
 			<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
 				<div className="flex items-center gap-2">
 					<WavesLadder size={16} />
-					<div>Pool Metadata</div>
+					<div className="font-semibold">Pool Metadata</div>
 				</div>
 			</div>
 			<div className="p-4">
@@ -105,7 +118,7 @@ const PoolStats: React.FC<{ data: ResponsePoolMetrics | undefined }> = ({
 			<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
 				<div className="flex items-center gap-2">
 					<ChartPie size={16} />
-					<div>Pool Stats</div>
+					<div className="font-semibold">Pool Stats</div>
 				</div>
 			</div>
 			<div className="p-4">
@@ -140,6 +153,113 @@ const PoolStats: React.FC<{ data: ResponsePoolMetrics | undefined }> = ({
 	);
 };
 
+const RiskAnalysisDoc = () => {
+	const riskCategories = [
+		{ range: "80-100", level: "Very High Risk", color: "bg-red-500" },
+		{ range: "60-79", level: "High Risk", color: "bg-orange-500" },
+		{ range: "40-59", level: "Medium Risk", color: "bg-yellow-500" },
+		{ range: "20-39", level: "Low Risk", color: "bg-green-500" },
+		{ range: "0-19", level: "Very Low Risk", color: "bg-emerald-500" },
+	];
+
+	const componentWeights = [
+		{ name: "TVL (Total Value Locked)", weight: 25 },
+		{ name: "Volume", weight: 20 },
+		{ name: "Transactions", weight: 15 },
+		{ name: "Price Stability", weight: 15 },
+		{ name: "Balance", weight: 15 },
+		{ name: "Activity", weight: 10 },
+	];
+
+	const timeWeights = [
+		{ period: "Last 24 hours", weight: 40 },
+		{ period: "7 days", weight: 30 },
+		{ period: "30 days", weight: 20 },
+		{ period: "90 days", weight: 10 },
+	];
+
+	return (
+		<div className="space-y-6 max-w-4xl">
+			<Card>
+				<CardHeader className="border-b p-5">
+					<CardTitle className="flex items-center gap-2">
+						<BookOpenText size={16} />
+						<div>Risk Analysis Documentation</div>
+					</CardTitle>
+				</CardHeader>
+				<CardContent className="space-y-6">
+					<div>
+						<h3 className="text-lg font-semibold mb-3">Risk Categories</h3>
+						<div className="space-y-2">
+							{riskCategories.map(({ range, level, color }) => (
+								<div key={level} className="flex items-center gap-2">
+									<div className={`w-4 h-4 rounded ${color}`} />
+									<span className="font-medium">{level}:</span>
+									<span>Score {range}</span>
+								</div>
+							))}
+						</div>
+					</div>
+
+					<div>
+						<h3 className="text-lg font-semibold mb-3">Component Weights</h3>
+						<div className="space-y-3">
+							{componentWeights.map(({ name, weight }) => (
+								<div key={name} className="space-y-1">
+									<div className="flex justify-between">
+										<span>{name}</span>
+										<span className="font-medium">{weight}%</span>
+									</div>
+									<Progress value={weight} className="h-2" />
+								</div>
+							))}
+						</div>
+					</div>
+
+					<Alert>
+						<Info className="h-4 w-4" />
+						<AlertTitle>Time-based Analysis</AlertTitle>
+						<AlertDescription>
+							<div className="mt-2 space-y-1">
+								{timeWeights.map(({ period, weight }) => (
+									<div key={period} className="flex justify-between">
+										<span>{period}</span>
+										<span className="font-medium">{weight}%</span>
+									</div>
+								))}
+							</div>
+						</AlertDescription>
+					</Alert>
+
+					<div className="space-y-3">
+						<h3 className="text-lg font-semibold">Warning Indicators</h3>
+						<ul className="list-disc pl-6 space-y-2">
+							<li>Extremely low TVL (less than 1e-6)</li>
+							<li>No significant recent trading volume (score {">"} 0.8)</li>
+							<li>No significant recent transactions (score {">"} 0.8)</li>
+							<li>Highly imbalanced liquidity (ratio less than 0.1)</li>
+							<li>Historical activity but no recent transactions</li>
+							<li>Historical volume but no recent trades</li>
+						</ul>
+					</div>
+
+					<div className="space-y-3">
+						<h3 className="text-lg font-semibold">Metrics Calculated</h3>
+						<ul className="list-disc pl-6 space-y-2">
+							<li>Overall risk score (0-100)</li>
+							<li>Risk category classification</li>
+							<li>Individual component scores</li>
+							<li>Pool metrics including TVL, volumes, transactions</li>
+							<li>Liquidity balance ratio</li>
+							<li>Activity trends across multiple time periods</li>
+						</ul>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
+	);
+};
+
 export default function PairPage({ params }: PageProps) {
 	const { chain, pair_address } = params;
 
@@ -157,11 +277,21 @@ export default function PairPage({ params }: PageProps) {
 		[metrics],
 	);
 
-	if (error) {
+	if ((error || !metrics) && !isLoading) {
 		return (
-			<div className="container mx-auto py-8">
-				<div className="text-red-500">
-					Error: Unable to fetch data. Please try again later.
+			<div className="h-80 flex items-center justify-center">
+				<div className="flex flex-col items-center justify-center">
+					<div className="w-20 h-20 bg-secondary flex items-center justify-center rounded-full">
+						<Inbox className="w-10 h-10" />
+					</div>
+					<div className="space-y-2 text-center">
+						<h2 className="text-2xl font-bold tracking-tight">
+							No data to display
+						</h2>
+						<p className="text-gray-500 dark:text-gray-400">
+							It looks like there's no data available yet.
+						</p>
+					</div>
 				</div>
 			</div>
 		);
@@ -169,8 +299,8 @@ export default function PairPage({ params }: PageProps) {
 
 	if (isLoading) {
 		return (
-			<div className="container mx-auto py-8">
-				<div className="text-gray-500">Loading data, please wait...</div>
+			<div className="h-80 flex items-center justify-center">
+				<HyperText>Loading data, please wait...</HyperText>
 			</div>
 		);
 	}
@@ -186,7 +316,7 @@ export default function PairPage({ params }: PageProps) {
 					<div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
 						<div className="flex items-center gap-2 mb-2 sm:mb-0">
 							<Bolt size={16} />
-							<div>Risk Score</div>
+							<div className="font-semibold">Risk Score</div>
 						</div>
 						<Badge variant="outline">
 							A higher score indicates a higher level of risk associated with
@@ -231,6 +361,32 @@ export default function PairPage({ params }: PageProps) {
 							description="Volume score for the selected pool."
 						/>
 					</div>
+				</div>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div className="border rounded-lg h-fit">
+						<div>
+							<div className="flex items-center gap-2 border-b p-4">
+								<FileWarning size={16} />
+								<div className="font-semibold">Warnings</div>
+							</div>
+							<div className="p-4">
+								<ul>
+									{analyzeRisk?.warnings.map((warning, index) => (
+										<li key={index} className="flex items-center gap-2">
+											<TriangleAlert size={16} />
+											<div>{warning}</div>
+										</li>
+									))}
+									{analyzeRisk?.warnings.length === 0 && (
+										<li className="text-muted-foreground">
+											No warnings found.
+										</li>
+									)}
+								</ul>
+							</div>
+						</div>
+					</div>
+					<RiskAnalysisDoc />
 				</div>
 			</div>
 		</div>
