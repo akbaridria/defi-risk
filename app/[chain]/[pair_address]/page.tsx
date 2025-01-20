@@ -10,7 +10,7 @@ import { useMetadata, useMetrics } from "@/hooks/useApi";
 import { analyzePoolRisk } from "@/lib/risk-analyzer";
 import { formatCurrency } from "@/lib/utils";
 import type { ResponsePoolMetrics } from "@/types";
-import { Progress } from "@radix-ui/react-progress";
+import { Progress } from "@/components/ui/progress";
 import {
 	Bolt,
 	BookOpenText,
@@ -42,7 +42,8 @@ const getScoreColor = (score: number) => {
 	if (score >= 80) return "hsl(var(--chart-5))";
 	if (score >= 60) return "hsl(var(--chart-4))";
 	if (score >= 40) return "hsl(var(--chart-3))";
-	if (score <= 20) return "hsl(var(--chart-2))";
+	if (score >= 20) return "hsl(var(--chart-2))";
+	if (score >= 0) return "hsl(var(--chart-1))";
 	return "hsl(var(--chart-5))";
 };
 
