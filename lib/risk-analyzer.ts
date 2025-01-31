@@ -131,7 +131,7 @@ export const analyzePoolRisk = (
 	};
 
 	const tvl = Math.abs(poolData.total_tvl ?? 0);
-	const tvlScore = normalize(tvl, 0, 1e6);
+	const tvlScore = 1 - normalize(tvl, 0, 1e6);
 	const volumeScore = calculateVolumeScore(poolData);
 	const activityScore = calculateActivityScore(poolData);
 
@@ -149,7 +149,7 @@ export const analyzePoolRisk = (
 		poolData.token0_price,
 		poolData.token1_price,
 	);
-	const priceScore = normalize(priceRatio, 0, 1);
+	const priceScore = 1 - normalize(priceRatio, 0, 1);
 
 	const totalShare =
 		Math.abs(poolData.token0_share ?? 0) + Math.abs(poolData.token1_share ?? 0);
@@ -159,7 +159,7 @@ export const analyzePoolRisk = (
 			Math.abs(poolData.token1_share ?? 0),
 		) /
 		(totalShare / 2);
-	const balanceScore = normalize(balanceRatio, 0, 1);
+	const balanceScore = 1 - normalize(balanceRatio, 0, 1);
 
 	const componentScores: ComponentScores = {
 		tvl_score: tvlScore * 100,
